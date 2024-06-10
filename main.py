@@ -1,12 +1,12 @@
 from stockfish import Stockfish
 from collections import deque
+import copy
 
 filename = 1
 
 class Node:
     def __init__(self, sf):
         self.child = []
-        self.child_count = 0
         self.sf = sf
         if (fen.split()[1] == 'w'):
             self.turn = 'w'
@@ -15,7 +15,6 @@ class Node:
 
     def add_child(self, n):
         self.child.append(n)
-        self.child_count += 1
 
     def write_to_file(self):
         global filename
@@ -39,19 +38,20 @@ class Node:
             file.write('\n\n')
         filename += 1
 
-    def make_tree(self, depth):
+    def make_tree(self, depth, child_count):
         if (depth == 0):
             return
         
-        moves = self.sf.get_top_moves(2)
+        moves = self.sf.get_top_moves(child_count)
         fen = self.sf.get_fen_position()
         for move in moves:
-            self.sf.set_fen_position(fen)
-            self.sf.make_moves_from_current_position([move['Move']])
-            child = Node(self.sf)
+            new_sf = Stockfish(path="./stockfish/stockfish-windows-x86-64-avx2.exe")
+            new_sf.set_fen_position(self.sf.get_fen_position())
+            new_sf.make_moves_from_current_position([move['Move']])
+            print(new_sf.get_fen_position())
+            child = Node(new_sf)
             self.add_child(child)
-            print(self.sf.get_fen_position())
-            child.make_tree(depth-1)
+            child.make_tree(depth-1, child_count)
 
 def bfs_print(root):
     queue = deque([root])
@@ -70,7 +70,6 @@ def evaluate(fen):
     calculator.set_fen_position(fen)
     return calculator.get_evaluation()
 
-stockfish = Stockfish(path="./stockfish/stockfish-windows-x86-64-avx2.exe", depth=15) # defaultnya emg 15
 
 def is_game_over():
     info = stockfish.get_evaluation()
@@ -96,45 +95,15 @@ def print_board():
             ascii_board += fen_to_ascii.get(board[i], board[i])
     return ascii_board
 
-# def set_board_position(fen):
-#     stockfish.set_fen_position(fen)
-
-# def get_best_moves(n=1):
-#     return stockfish.get_top_moves(n)
-
 fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 # fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNB1KBNR w KQkq - 0 1"
 # fen = "rnb1kbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
-
-# best_moves = stockfish.get_top_moves(3)
-# root = Node(stockfish)
-# for move in best_moves:
-#     stockfish.set_fen_position(fen)
-#     make_move(move['Move'])
-#     child = Node(stockfish)
-#     root.add_child(child)
-
-# root.write_child_to_file()
-
-# print(print_board())
-
-# make_move(best_moves[0]['Move'])
-
-# print(print_board())
-
-# print((stockfish.get_board_visual()[0]))
-
-# while True:
-#     make_move(get_best_moves()[0]['Move'])
-#     print(print_board())
-#     print(stockfish.get_evaluation())
-    
-#     if is_game_over():
-#         break
+stockfish = Stockfish(path="./stockfish/stockfish-windows-x86-64-avx2.exe", depth=15) # defaultnya emg 15
+stockfish.set_fen_position(fen)
 
 root = Node(stockfish)
-root.make_tree(2)
+root.make_tree(2, 2)
 print("make tree kelar")
 print(root.sf.get_fen_position())
 print("ngeprint broh")
