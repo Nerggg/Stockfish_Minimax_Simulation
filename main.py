@@ -105,7 +105,7 @@ def minimax(node, depth, maximizing):
                 minimax_node = minimax(node.child[i], depth-1, True)
                 if (minimax_node.eval['value'] > extreme_node.eval['value']):
                     extreme_node = minimax_node
-    print("yg di return itu " + str(extreme_node.move) + " dengan value " + str(extreme_node.eval['value']))
+    # print("yg di return itu " + str(extreme_node.move) + " dengan value " + str(extreme_node.eval['value']))
     return extreme_node
 
 def delete_tree(root):
@@ -152,10 +152,6 @@ def print_board(sf):
 # fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 fen = "4K3/4P1k1/8/8/8/8/7R/5r2 b - - 0 1"
 
-stockfish = Stockfish(path="./stockfish/stockfish-windows-x86-64-avx2.exe") # depth defaultnya 15
-stockfish.set_fen_position(fen)
-print(print_board(stockfish))
-
 # SINGLE PRINTING
 # root = Node(stockfish, [])
 # root.make_tree(3, 2) # depth, child_count
@@ -165,12 +161,14 @@ print(print_board(stockfish))
 # MAIN GAME
 white = False
 while True:
+    stockfish = Stockfish(path="./stockfish/stockfish-windows-x86-64-avx2.exe") # depth defaultnya 15
+    stockfish.set_fen_position(fen)
     root = Node(stockfish, [])
     root.make_tree(3, 2)
     stockfish.make_moves_from_current_position([minimax(root, 3, white).move[0]])
     print(print_board(stockfish))
-    print(stockfish.get_fen_position())
-    # delete_tree(root)
+    fen = stockfish.get_fen_position()
+    print(fen)
 
     if white:
         white = False
