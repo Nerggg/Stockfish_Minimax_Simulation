@@ -5,9 +5,10 @@ import copy
 filename = 1
 
 class Node:
-    def __init__(self, sf):
+    def __init__(self, sf, move):
         self.child = []
         self.sf = sf
+        self.move = move
         if (fen.split()[1] == 'w'):
             self.turn = 'w'
         else:
@@ -33,9 +34,12 @@ class Node:
                     ascii_board += fen_to_ascii.get(board[i], board[i])
             evaluation = evaluate(self.sf.get_fen_position())
             file.write(ascii_board)
+            for move in self.move:
+                file.write(move + ' ')
+            file.write('\n')
             file.write(evaluation['type'] + '\n')
             file.write(str(evaluation['value']))
-            file.write('\n\n')
+            file.write('\n')
         filename += 1
 
     def make_tree(self, depth, child_count):
@@ -43,15 +47,18 @@ class Node:
             return
         
         moves = self.sf.get_top_moves(child_count)
-        fen = self.sf.get_fen_position()
         for move in moves:
             new_sf = Stockfish(path="./stockfish/stockfish-windows-x86-64-avx2.exe")
             new_sf.set_fen_position(self.sf.get_fen_position())
             new_sf.make_moves_from_current_position([move['Move']])
             print(new_sf.get_fen_position())
-            child = Node(new_sf)
+            move_temp = self.move.copy()
+            move_temp.append(move['Move'])
+            child = Node(new_sf, move_temp)
             self.add_child(child)
+            print(child.move)
             child.make_tree(depth-1, child_count)
+            del move_temp
 
 def bfs_print(root):
     queue = deque([root])
@@ -95,14 +102,15 @@ def print_board():
             ascii_board += fen_to_ascii.get(board[i], board[i])
     return ascii_board
 
-fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+fen = "4K3/4P1k1/8/8/8/8/7R/5r2 b - - 0 1"
+# fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 # fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNB1KBNR w KQkq - 0 1"
 # fen = "rnb1kbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
 stockfish = Stockfish(path="./stockfish/stockfish-windows-x86-64-avx2.exe", depth=15) # defaultnya emg 15
 stockfish.set_fen_position(fen)
 
-root = Node(stockfish)
+root = Node(stockfish, [])
 root.make_tree(2, 2)
 print("make tree kelar")
 print(root.sf.get_fen_position())
