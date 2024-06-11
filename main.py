@@ -8,10 +8,6 @@ class Node:
         self.child = []
         self.sf = sf
         self.move = move
-        if (fen.split()[1] == 'w'):
-            self.turn = 'w'
-        else:
-            self.turn = 'b'
 
     def add_child(self, n):
         self.child.append(n)
@@ -78,6 +74,24 @@ class Node:
             child.make_tree(depth-1, child_count)
             del move_temp
 
+def minimax(node, depth, maximizing):
+    if depth == 0:
+        return node
+    
+    if maximizing: # white turn
+        extreme_eval = minimax(node.child[0], depth-1, False)
+        for i in range (1, len(node.child)):
+            eval = minimax(node.child[i], depth-1, False)
+            if (evaluate(eval.sf.get_fen_position())['value'] > evaluate(extreme_eval.sf.get_fen_position())['value']):
+                extreme_eval = eval
+    else: # black turn
+        extreme_eval = minimax(node.child[0], depth-1, True)
+        for i in range (1, len(node.child)):
+            eval = minimax(node.child[i], depth-1, True)
+            if (evaluate(eval.sf.get_fen_position())['value'] < evaluate(extreme_eval.sf.get_fen_position())['value']):
+                extreme_eval = eval
+    return extreme_eval
+
 def bfs_print(root):
     queue = deque([root])
 
@@ -120,14 +134,15 @@ def print_board():
             ascii_board += fen_to_ascii.get(board[i], board[i])
     return ascii_board
 
-fen = "4K3/4P1k1/8/8/8/8/7R/5r2 b - - 0 1"
 # fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+fen = "4K3/4P1k1/8/8/8/8/7R/5r2 b - - 0 1"
+# fen = "4K3/4P1k1/8/8/8/8/7R/3r4 w - - 1 2"
+# fen = "4K3/4P1k1/8/8/8/8/4R3/3r4 b - - 2 2"
 
-stockfish = Stockfish(path="./stockfish/stockfish-windows-x86-64-avx2.exe", depth=15) # defaultnya emg 15
+stockfish = Stockfish(path="./stockfish/stockfish-windows-x86-64-avx2.exe") # defaultnya emg 15
 stockfish.set_fen_position(fen)
 
 root = Node(stockfish, [])
 root.make_tree(3, 2) # depth, child_count
-print("make tree kelar")
-print("ngeprint broh")
-bfs_print(root)
+# bfs_print(root)
+print(minimax(root, 3, False).move)
