@@ -38,7 +38,7 @@ class Node:
             file.write('\n')
             file.write(evaluation['type'] + '\n')
             file.write(str(evaluation['value']))
-            file.write('\n  ')
+            file.write('\n')
         filename += 1
 
     def make_tree(self, depth, child_count):
@@ -108,8 +108,7 @@ stockfish = Stockfish(path="./stockfish/stockfish-windows-x86-64-avx2.exe", dept
 stockfish.set_fen_position(fen)
 
 root = Node(stockfish, [])
-root.make_tree(2, 2) # depth, child_count
+root.make_tree(3, 2) # depth, child_count
 print("make tree kelar")
-print(root.sf.get_fen_position())
 print("ngeprint broh")
 bfs_print(root)
