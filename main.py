@@ -1,6 +1,5 @@
 from stockfish import Stockfish
 from collections import deque
-import copy
 
 filename = 1
 
@@ -39,7 +38,7 @@ class Node:
             file.write('\n')
             file.write(evaluation['type'] + '\n')
             file.write(str(evaluation['value']))
-            file.write('\n')
+            file.write('\n  ')
         filename += 1
 
     def make_tree(self, depth, child_count):
@@ -104,14 +103,12 @@ def print_board():
 
 fen = "4K3/4P1k1/8/8/8/8/7R/5r2 b - - 0 1"
 # fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-# fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNB1KBNR w KQkq - 0 1"
-# fen = "rnb1kbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
 stockfish = Stockfish(path="./stockfish/stockfish-windows-x86-64-avx2.exe", depth=15) # defaultnya emg 15
 stockfish.set_fen_position(fen)
 
 root = Node(stockfish, [])
-root.make_tree(2, 2)
+root.make_tree(2, 2) # depth, child_count
 print("make tree kelar")
 print(root.sf.get_fen_position())
 print("ngeprint broh")
