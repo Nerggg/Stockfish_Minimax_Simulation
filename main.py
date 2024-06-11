@@ -23,23 +23,42 @@ class Node:
         'r': '♖', 'n': '♘', 'b': '♗', 'q': '♕', 'k': '♔', 'p': '♙',
         }
         
-        with open (str(filename) + ".txt", 'w') as file:
-            board = self.sf.get_board_visual()
-            ascii_board = ""
-            for i in range (len(board)):
-                if i + 31 >= len(board):
-                    ascii_board += board[i]
-                else:
-                    ascii_board += fen_to_ascii.get(board[i], board[i])
-            evaluation = evaluate(self.sf.get_fen_position())
-            file.write(ascii_board)
-            for move in self.move:
-                file.write(move + ' ')
-            file.write('\n')
-            file.write(evaluation['type'] + '\n')
-            file.write(str(evaluation['value']))
-            file.write('\n')
-        filename += 1
+        if (filename < 10):
+            with open ('0' + str(filename) + ".txt", 'w') as file:
+                board = self.sf.get_board_visual()
+                ascii_board = ""
+                for i in range (len(board)):
+                    if i + 31 >= len(board):
+                        ascii_board += board[i]
+                    else:
+                        ascii_board += fen_to_ascii.get(board[i], board[i])
+                evaluation = evaluate(self.sf.get_fen_position())
+                file.write(ascii_board)
+                for move in self.move:
+                    file.write(move + ' ')
+                file.write('\n')
+                file.write(evaluation['type'] + '\n')
+                file.write(str(evaluation['value']))
+                file.write('\n')
+            filename += 1
+        else:
+            with open (str(filename) + ".txt", 'w') as file:
+                board = self.sf.get_board_visual()
+                ascii_board = ""
+                for i in range (len(board)):
+                    if i + 31 >= len(board):
+                        ascii_board += board[i]
+                    else:
+                        ascii_board += fen_to_ascii.get(board[i], board[i])
+                evaluation = evaluate(self.sf.get_fen_position())
+                file.write(ascii_board)
+                for move in self.move:
+                    file.write(move + ' ')
+                file.write('\n')
+                file.write(evaluation['type'] + '\n')
+                file.write(str(evaluation['value']))
+                file.write('\n')
+            filename += 1
 
     def make_tree(self, depth, child_count):
         if (depth == 0):
