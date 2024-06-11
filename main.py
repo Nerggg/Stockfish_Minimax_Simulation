@@ -150,31 +150,37 @@ def print_board(sf):
     return ascii_board
 
 # fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-fen = "4K3/4P1k1/8/8/8/8/7R/5r2 b - - 0 1"
+# fen = "4K3/4P1k1/8/8/8/8/7R/5r2 b - - 0 1"
+fen = "4K3/4P1k1/8/8/8/8/7R/r7 w - - 1 2"
 
 # SINGLE PRINTING
-# root = Node(stockfish, [])
-# root.make_tree(3, 2) # depth, child_count
-# bfs_print(root)
-# print(minimax(root, 3, False).move)
+stockfish = Stockfish(path="./stockfish/stockfish-windows-x86-64-avx2.exe") # depth defaultnya 15
+stockfish.set_fen_position(fen)
+root = Node(stockfish, [])
+root.make_tree(3, 2) # depth, child_count
+bfs_print(root)
+move = minimax(root, 3, False).move
+print(move)
+stockfish.make_moves_from_current_position([move[0]])
+print(stockfish.get_fen_position())
 
 # MAIN GAME
-white = False
-while True:
-    stockfish = Stockfish(path="./stockfish/stockfish-windows-x86-64-avx2.exe") # depth defaultnya 15
-    stockfish.set_fen_position(fen)
-    root = Node(stockfish, [])
-    root.make_tree(3, 2)
-    stockfish.make_moves_from_current_position([minimax(root, 3, white).move[0]])
-    print(print_board(stockfish))
-    fen = stockfish.get_fen_position()
-    print(fen)
+# white = False
+# while True:
+#     stockfish = Stockfish(path="./stockfish/stockfish-windows-x86-64-avx2.exe") # depth defaultnya 15
+#     stockfish.set_fen_position(fen)
+#     root = Node(stockfish, [])
+#     root.make_tree(3, 2)
+#     stockfish.make_moves_from_current_position([minimax(root, 3, white).move[0]])
+#     print(print_board(stockfish))
+#     fen = stockfish.get_fen_position()
+#     print(fen)
 
-    if white:
-        white = False
-    else:
-        white = True
+#     if white:
+#         white = False
+#     else:
+#         white = True
 
-    if (is_game_over(stockfish)):
-        print("game over :D")
-        break
+#     if (is_game_over(stockfish)):
+#         print("game over :D")
+#         break
