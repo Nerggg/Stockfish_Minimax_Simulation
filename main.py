@@ -80,23 +80,23 @@ def minimax(node, depth, maximizing):
         return node
     
     if maximizing: # white turn
-        if node.eval['type'] == 'cp' or (node.eval['type'] == 'mate' and node.eval['value'] < 0):
+        if node.eval['type'] == 'cp' or (node.eval['type'] == 'mate' and node.eval['value'] <= 0):
             extreme_node = minimax(node.child[0], depth-1, False)
             for i in range (1, len(node.child)):
                 minimax_node = minimax(node.child[i], depth-1, False)
                 if (minimax_node.eval['value'] > extreme_node.eval['value']):
                     extreme_node = minimax_node
         else:
-            extreme_node = minimax(node.child[0], depth-1, True)
+            extreme_node = minimax(node.child[0], depth-1, False)
             for i in range (1, len(node.child)):
-                minimax_node = minimax(node.child[i], depth-1, True)
+                minimax_node = minimax(node.child[i], depth-1, False)
                 if (minimax_node.eval['value'] < extreme_node.eval['value']):
                     extreme_node = minimax_node
     else: # black turn
-        if node.eval['type'] == 'cp' or (node.eval['type'] == 'mate' and node.eval['value'] > 0):
-            extreme_node = minimax(node.child[0], depth-1, False)
+        if node.eval['type'] == 'cp' or (node.eval['type'] == 'mate' and node.eval['value'] >= 0):
+            extreme_node = minimax(node.child[0], depth-1, True)
             for i in range (1, len(node.child)):
-                minimax_node = minimax(node.child[i], depth-1, False)
+                minimax_node = minimax(node.child[i], depth-1, True)
                 if (minimax_node.eval['value'] < extreme_node.eval['value']):
                     extreme_node = minimax_node
         else:
@@ -105,7 +105,7 @@ def minimax(node, depth, maximizing):
                 minimax_node = minimax(node.child[i], depth-1, True)
                 if (minimax_node.eval['value'] > extreme_node.eval['value']):
                     extreme_node = minimax_node
-    # print("yg di return itu " + str(extreme_node.move) + " dengan value " + str(extreme_node.eval['value']))
+    print("yg di return itu " + str(extreme_node.move) + " dengan value " + str(extreme_node.eval['value']))
     return extreme_node
 
 def delete_tree(root):
@@ -150,37 +150,42 @@ def print_board(sf):
     return ascii_board
 
 # fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-# fen = "4K3/4P1k1/8/8/8/8/7R/5r2 b - - 0 1"
-fen = "4K3/4P1k1/8/8/8/8/7R/r7 w - - 1 2"
+fen = "4K3/4P1k1/8/8/8/8/7R/5r2 b - - 0 1"
+# fen = "4K3/4P1k1/8/8/8/8/7R/r7 w - - 1 2"
+# fen = "4K3/4P1k1/8/8/8/8/6R1/r7 b - - 2 2"
+# fen = "4K3/4P3/5k2/8/8/8/6R1/r7 w - - 3 3"
 
+fen = "8/8/4K1R1/8/8/7k/8/8 w - - 18 20"
 # SINGLE PRINTING
-stockfish = Stockfish(path="./stockfish/stockfish-windows-x86-64-avx2.exe") # depth defaultnya 15
-stockfish.set_fen_position(fen)
-root = Node(stockfish, [])
-root.make_tree(3, 2) # depth, child_count
-bfs_print(root)
-move = minimax(root, 3, False).move
-print(move)
-stockfish.make_moves_from_current_position([move[0]])
-print(stockfish.get_fen_position())
+# stockfish = Stockfish(path="./stockfish/stockfish-windows-x86-64-avx2.exe") # depth defaultnya 15
+# stockfish.set_fen_position(fen)
+# root = Node(stockfish, [])
+# root.make_tree(3, 2) # depth, child_count
+# bfs_print(root)
+# move = minimax(root, 3, True).move
+# print(move)
+# stockfish.make_moves_from_current_position([move[0]])
+# print(stockfish.get_fen_position())
 
 # MAIN GAME
-# white = False
-# while True:
-#     stockfish = Stockfish(path="./stockfish/stockfish-windows-x86-64-avx2.exe") # depth defaultnya 15
-#     stockfish.set_fen_position(fen)
-#     root = Node(stockfish, [])
-#     root.make_tree(3, 2)
-#     stockfish.make_moves_from_current_position([minimax(root, 3, white).move[0]])
-#     print(print_board(stockfish))
-#     fen = stockfish.get_fen_position()
-#     print(fen)
+white = False
+while True:
+    stockfish = Stockfish(path="./stockfish/stockfish-windows-x86-64-avx2.exe") # depth defaultnya 15
+    stockfish.set_fen_position(fen)
+    root = Node(stockfish, [])
+    root.make_tree(3, 2)
+    move = minimax(root, 3, white).move
+    stockfish.make_moves_from_current_position([move[0]])
+    print(print_board(stockfish))
+    print(move)
+    fen = stockfish.get_fen_position()
+    print(fen)
 
-#     if white:
-#         white = False
-#     else:
-#         white = True
+    if white:
+        white = False
+    else:
+        white = True
 
-#     if (is_game_over(stockfish)):
-#         print("game over :D")
-#         break
+    if (is_game_over(stockfish)):
+        print("game over :D")
+        break
