@@ -61,3 +61,4 @@ Please note that you need Python to be able to run this program
     You can check the calculation for each node in the generated txt files. The numbering will follow the usual BFS node traversing.
 
 ## Demo
+https://github.com/Nerggg/Stockfish_Minimax_Simulation/assets/118040364/4db6e4dd-889f-4018-9aef-55dea068caf3
