@@ -25,7 +25,7 @@ Kg7
 Kh3
 Kf7
 Kh2
-Rg6
+Rg7
 Kh3
 Ke7
 Kh4
@@ -34,10 +34,14 @@ Kh5
 Rg6
 Kh4
 Ke6
-Kh3
-Rg7
+Kh5
+Kf6
 Kh4
-Kf5
+Ke6
+Kh3
+Ke5
+Kh2
+Rg7
 Kh3
 Kf4
 Kh2

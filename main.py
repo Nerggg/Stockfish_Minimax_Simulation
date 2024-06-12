@@ -75,37 +75,37 @@ class Node:
             child.make_tree(depth-1, child_count)
             del move_temp
 
-def minimax(node, depth, maximizing):
+def minimax(node, depth, maximizing, prev_value):
     if depth == 0 or len(node.child) == 0:
         return node
     
     if maximizing: # white turn
-        if node.eval['type'] == 'cp' or (node.eval['type'] == 'mate' and node.eval['value'] <= 0):
-            extreme_node = minimax(node.child[0], depth-1, False)
+        if node.eval['type'] == 'cp':
+            extreme_node = minimax(node.child[0], depth-1, False, prev_value)
             for i in range (1, len(node.child)):
-                minimax_node = minimax(node.child[i], depth-1, False)
+                minimax_node = minimax(node.child[i], depth-1, False, prev_value)
                 if (minimax_node.eval['value'] > extreme_node.eval['value']):
                     extreme_node = minimax_node
-        else:
-            extreme_node = minimax(node.child[0], depth-1, False)
+        else: # white mating
+            extreme_node = minimax(node.child[0], depth-1, False, prev_value)
             for i in range (1, len(node.child)):
-                minimax_node = minimax(node.child[i], depth-1, False)
+                minimax_node = minimax(node.child[i], depth-1, False, prev_value)
                 if (minimax_node.eval['value'] < extreme_node.eval['value']):
                     extreme_node = minimax_node
     else: # black turn
-        if node.eval['type'] == 'cp' or (node.eval['type'] == 'mate' and node.eval['value'] >= 0):
-            extreme_node = minimax(node.child[0], depth-1, True)
+        if node.eval['type'] == 'cp':
+            extreme_node = minimax(node.child[0], depth-1, True, prev_value)
             for i in range (1, len(node.child)):
-                minimax_node = minimax(node.child[i], depth-1, True)
+                minimax_node = minimax(node.child[i], depth-1, True, prev_value)
                 if (minimax_node.eval['value'] < extreme_node.eval['value']):
                     extreme_node = minimax_node
-        else:
-            extreme_node = minimax(node.child[0], depth-1, True)
+        else: # black mating
+            extreme_node = minimax(node.child[0], depth-1, True, prev_value)
             for i in range (1, len(node.child)):
-                minimax_node = minimax(node.child[i], depth-1, True)
+                minimax_node = minimax(node.child[i], depth-1, True, prev_value)
                 if (minimax_node.eval['value'] > extreme_node.eval['value']):
                     extreme_node = minimax_node
-    print("yg di return itu " + str(extreme_node.move) + " dengan value " + str(extreme_node.eval['value']))
+    # print("yg di return itu " + str(extreme_node.move) + " dengan value " + str(extreme_node.eval['value']))
     return extreme_node
 
 def delete_tree(root):
@@ -155,7 +155,7 @@ fen = "4K3/4P1k1/8/8/8/8/7R/5r2 b - - 0 1"
 # fen = "4K3/4P1k1/8/8/8/8/6R1/r7 b - - 2 2"
 # fen = "4K3/4P3/5k2/8/8/8/6R1/r7 w - - 3 3"
 
-fen = "8/8/4K1R1/8/8/7k/8/8 w - - 18 20"
+# fen = "8/8/4K1R1/8/8/7k/8/8 w - - 18 20"
 # SINGLE PRINTING
 # stockfish = Stockfish(path="./stockfish/stockfish-windows-x86-64-avx2.exe") # depth defaultnya 15
 # stockfish.set_fen_position(fen)
@@ -169,17 +169,20 @@ fen = "8/8/4K1R1/8/8/7k/8/8 w - - 18 20"
 
 # MAIN GAME
 white = False
+prev_value = 0
 while True:
     stockfish = Stockfish(path="./stockfish/stockfish-windows-x86-64-avx2.exe") # depth defaultnya 15
     stockfish.set_fen_position(fen)
     root = Node(stockfish, [])
     root.make_tree(3, 2)
-    move = minimax(root, 3, white).move
+    move = minimax(root, 3, white, prev_value).move
     stockfish.make_moves_from_current_position([move[0]])
     print(print_board(stockfish))
     print(move)
     fen = stockfish.get_fen_position()
     print(fen)
+
+    prev_value = root.eval['value']
 
     if white:
         white = False
